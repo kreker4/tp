@@ -1,0 +1,17 @@
+C:\Users\sHamil\source\repos\NotSteam\bin\Debug\net7.0\NotSteam.exe
+C:\Users\sHamil\source\repos\NotSteam\bin\Debug\net7.0\NotSteam.deps.json
+C:\Users\sHamil\source\repos\NotSteam\bin\Debug\net7.0\NotSteam.runtimeconfig.json
+C:\Users\sHamil\source\repos\NotSteam\bin\Debug\net7.0\NotSteam.dll
+C:\Users\sHamil\source\repos\NotSteam\bin\Debug\net7.0\NotSteam.pdb
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.csproj.AssemblyReference.cache
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.AssemblyInfoInputs.cache
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.AssemblyInfo.cs
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.csproj.CoreCompileInputs.cache
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.dll
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\refint\NotSteam.dll
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.pdb
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.genruntimeconfig.cache
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\ref\NotSteam.dll
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.Properties.Resources.resources
+C:\Users\sHamil\source\repos\NotSteam\obj\Debug\net7.0\NotSteam.csproj.GenerateResource.cache
