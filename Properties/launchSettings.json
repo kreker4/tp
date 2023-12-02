@@ -1,8 +1,7 @@
 {
   "profiles": {
     "NotSteam": {
-      "commandName": "Project",
-      "commandLineArgs": "db_Users.txt"
+      "commandName": "Project"
     }
   }
 }

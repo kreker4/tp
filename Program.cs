@@ -1,73 +1,35 @@
-﻿using System;
+﻿using NotSteam;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Xml.Linq;
 
 
 
- class Game
-{
-    public string Description { get; set; }
-    public int ID { get; set; }
-    public decimal Price { get; set; }
-    public string Title { get; set; }
-}
-class User
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public decimal Balance { get; set; }
-    public List<int> Library { get; set; } = new List<int>();
-    public List<int> Cart { get; set; } = new List<int>();
-    public string Nickname { get; set; }
-}
-
 class Program
 {
-    private static List<Game> games = new List<Game>();
-    private static List<User> users = new List<User>();
-    private static string gamesFilePath = "games.json";
-    private static string usersFilePath = "users.json";
-    
-    static void FirstMenuGreetings()
-    {
-        Console.WriteLine("1. Вход");
-        Console.WriteLine("2. Регистрация");
-        Console.WriteLine("0. Выход");
-        int choice = CheckIfMenuCorrect();
-    }
-
-    static void WrongInput()
-    {
-        Console.WriteLine("Ошибка входа. Неверный логин или пароль.");
-        Console.ReadLine();
-    }
-
+   
     static void Main(string[] args)
     {
         DataAccess.LoadData();
-
+               
         while (true)
         {
-            FirstMenuGreetings();
-            //Console.WriteLine("1. Вход");
-            //Console.WriteLine("2. Регистрация");
-            //Console.WriteLine("0. Выход");
-            //int choice = CheckIfMenuCorrect();
+            int choice = UserConsole.FirstMenuChoose();
+            
             if (choice == null)
             {
-               // WrongInput();
-                Console.WriteLine("Ошибка входа. Неверный логин или пароль.");
-                Console.ReadLine();
+                OutputOnScreen.ShowMessageLoginError();
                 continue;
             }
 
             switch (choice)
             {
                 case 1:
-                    User user = Login();
+                    User user = SigningManager.Login();
                     if (user != null)
                     {
                         Console.WriteLine($"Добро пожаловать, {user.Nickname}!");
@@ -91,18 +53,6 @@ class Program
         }
     }
 
-    static User Login()
-    {
-        Console.Write("Введите имя пользователя: ");
-        string username = Console.ReadLine();
-        Console.Write("Введите пароль: ");
-        string password = Console.ReadLine();
-
-        User user = users.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-        return user;
-    }
-
     static void Register()
     {
         Console.Write("Введите имя пользователя: ");
@@ -112,7 +62,7 @@ class Program
         Console.Write("Введите ник: ");
         string nickname = Console.ReadLine();
 
-        if (users.Any(u => u.Username == username))
+        if (DataAccess.users.Any(u => u.Username == username))
         {
             Console.WriteLine("Пользователь с таким именем уже существует.");
         }
@@ -124,47 +74,19 @@ class Program
                 Password = password,
                 Nickname = nickname
             };
-            users.Add(newUser);
+            DataAccess.users.Add(newUser);
             Console.WriteLine("Пользователь успешно зарегистрирован.");
         }
     }
-    static void wait()
-    {
-        Console.WriteLine();
-        Console.WriteLine("Для продолжения нажмите любую клавишу:");
-        Console.ReadLine();
-        Console.Clear();
 
-    }
-    static int CheckIfMenuCorrect()//переделать по колву пунктов
-    {
-        int choice;
-        while (true)
-        {
-            if (int.TryParse(Console.ReadLine(), out choice) & (choice < games.Count + 999))
-            {
-                break;
-            }
-            else
-            {
-                Console.WriteLine("Некорректный ввод");
-            }
-        }
-        return choice;
-    }
     static void MainMenu(User user)
     {
         while (true)
         {
-            wait();
+            UserConsole.TimeLag();
             DataAccess.SaveData();
-            Console.WriteLine("1. Просмотр каталога игр");
-            Console.WriteLine("2. Просмотр библиотеки игр");
-            Console.WriteLine("3. Просмотр корзины");
-            Console.WriteLine("4. Пополнить баланс");
-            Console.WriteLine("0. Выйти");
-
-            int choice = CheckIfMenuCorrect();
+            OutputOnScreen.ShowMainMenuPoints();
+            int choice = UserConsole.CheckIfMenuCorrect();
 
             switch (choice)
             {
@@ -189,21 +111,14 @@ class Program
                     break;
             }
         }
+
+        
     }
 
     static void ViewCatalog(User user)
     {
-        Console.WriteLine("Каталог игр:");
-        foreach (var game in games)
-        {
-            Console.WriteLine($"ID: {game.ID}, Название: {game.Title}, Цена: {game.Price}");
-            Console.WriteLine($"Описание: {game.Description}");
-            Console.WriteLine();
-        }
-        Console.WriteLine("1. Добавить игру в корзину");
-        Console.WriteLine("2. Вернуться в главное меню");
-
-        int choice = CheckIfMenuCorrect();
+        UserConsole.ShowCatalog();
+        int choice = UserConsole.CheckIfMenuCorrect();
 
         switch (choice)
         {
@@ -219,7 +134,7 @@ class Program
 
     static void ViewLibrary(User user)
     {
-        Console.WriteLine("Ваша библиотека игр:");
+        OutputOnScreen.ShowMessageYourLibrary();
         if (user.Library.Count == 0)
         {
             Console.WriteLine("Ваша библиотека пуста.");
@@ -228,7 +143,7 @@ class Program
         {
             foreach (int gameId in user.Library)
             {
-                Game game = games.FirstOrDefault(g => g.ID == gameId);
+                Game game = DataAccess.games.FirstOrDefault(g => g.ID == gameId);
                 if (game != null)
                 {
                     Console.WriteLine($"ID: {game.ID}, Название: {game.Title}");
@@ -242,11 +157,9 @@ class Program
         Console.WriteLine("Управление корзиной:");
         ViewCart(user);
 
-        Console.WriteLine("1. Удалить игру из корзины");
-        Console.WriteLine("2. Оформить покупку");
-        Console.WriteLine("0. Вернуться в главное меню");
+        OutputOnScreen.ShowManageCartMenuPoints();
 
-        int choice = CheckIfMenuCorrect();
+        int choice = UserConsole.CheckIfMenuCorrect();
 
         switch (choice)
         {
@@ -272,7 +185,7 @@ class Program
         {
             foreach (int gameId in user.Cart)
             {
-                Game game = games.FirstOrDefault(g => g.ID == gameId);
+                Game game = DataAccess.games.FirstOrDefault(g => g.ID == gameId);
                 if (game != null)
                 {
                     Console.WriteLine($"ID: {game.ID}, Название: {game.Title}, Цена: {game.Price}");
@@ -285,9 +198,9 @@ class Program
     static void AddToCart(User user)
     {
         Console.Write("Введите ID игры для добавления в корзину: ");
-        int gameId = CheckIfMenuCorrect();
+        int gameId = UserConsole.CheckIfMenuCorrect();
 
-        Game gameToAdd = games.FirstOrDefault(g => g.ID == gameId);
+        Game gameToAdd = DataAccess.games.FirstOrDefault(g => g.ID == gameId);
         if (gameToAdd != null)
         {
             user.Cart.Add(gameToAdd.ID);
@@ -295,7 +208,7 @@ class Program
         }
         else
         {
-            Console.WriteLine("Игра с указанным ID не найдена.");
+            OutputOnScreen.ShowMessageGameNotFound();
         }
     }
 
@@ -310,17 +223,17 @@ class Program
         }
 
         Console.Write("Введите ID игры для удаления из корзины: ");
-        int gameId = CheckIfMenuCorrect();
+        int gameId = UserConsole.CheckIfMenuCorrect();
 
         if (user.Cart.Contains(gameId))
         {
-            Game gameToRemove = games.FirstOrDefault(g => g.ID == gameId);
+            Game gameToRemove = DataAccess.games.FirstOrDefault(g => g.ID == gameId);
             user.Cart.Remove(gameId);
             Console.WriteLine($"{gameToRemove.Title} удалена из корзины.");
         }
         else
         {
-            Console.WriteLine("Игра с указанным ID не найдена в корзине.");
+            OutputOnScreen.ShowMessageGameNotFound();
         }
     }
 
@@ -332,7 +245,7 @@ class Program
             return;
         }
 
-        decimal totalCost = user.Cart.Select(gameId => games.First(g => g.ID == gameId).Price).Sum();
+        decimal totalCost = user.Cart.Select(gameId => DataAccess.games.First(g => g.ID == gameId).Price).Sum();
         if (user.Balance >= totalCost)
         {
             user.Balance -= totalCost;

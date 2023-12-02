@@ -1,29 +1,43 @@
 ﻿using System.Text.Json;
+using NotSteam;
 
 internal static class DataAccess
 {
 
-    static void LoadData()
+    public static List<Game> games { get; private set; } = new List<Game>();
+    public static List<User> users { get; private set; } = new List<User>();
+
+    private static string _gamesFilePath = "games.json";
+    private static string _usersFilePath = "users.json";
+
+    public static void ChangeUsers(User user)
     {
-        if (File.Exists(gamesFilePath))
+        users.Add(user);
+    }
+
+    
+    public static void LoadData()
+    {
+        if (File.Exists(_gamesFilePath))
         {
-            string gamesJson = File.ReadAllText(gamesFilePath);
+            string gamesJson = File.ReadAllText(_gamesFilePath);
             games = JsonSerializer.Deserialize<List<Game>>(gamesJson);
         }
 
-        if (File.Exists(usersFilePath))
+        if (File.Exists(_usersFilePath))
         {
-            string usersJson = File.ReadAllText(usersFilePath);
+            string usersJson = File.ReadAllText(_usersFilePath);
             users = JsonSerializer.Deserialize<List<User>>(usersJson);
         }
     }
 
-    static void SaveData()
+   
+    public static void SaveData()
     {
         string gamesJson = JsonSerializer.Serialize(games);
-        File.WriteAllText(gamesFilePath, gamesJson);
+        File.WriteAllText(_gamesFilePath, gamesJson);
 
         string usersJson = JsonSerializer.Serialize(users);
-        File.WriteAllText(usersFilePath, usersJson);
+        File.WriteAllText(_usersFilePath, usersJson);
     }
 }
